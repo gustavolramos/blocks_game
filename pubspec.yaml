@@ -1,0 +1,26 @@
+name: sisterly_game_challenge
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  build_runner: ^2.4.7
+  flutter:
+    sdk: flutter
+  flutter_mobx: ^2.2.0
+  mobx: ^2.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  mobx_codegen: ^2.4.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/
