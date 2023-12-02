@@ -29,13 +29,13 @@ mixin _$Controller on ControllerBase, Store {
       Atom(name: 'ControllerBase.blockColors', context: context);
 
   @override
-  List<List<dynamic>> get blockColors {
+  List<List<Color>> get blockColors {
     _$blockColorsAtom.reportRead();
     return super.blockColors;
   }
 
   @override
-  set blockColors(List<List<dynamic>> value) {
+  set blockColors(List<List<Color>> value) {
     _$blockColorsAtom.reportWrite(value, super.blockColors, () {
       super.blockColors = value;
     });
@@ -118,17 +118,6 @@ mixin _$Controller on ControllerBase, Store {
       ActionController(name: 'ControllerBase', context: context);
 
   @override
-  dynamic alterGameState(GameState newGameState) {
-    final _$actionInfo = _$ControllerBaseActionController.startAction(
-        name: 'ControllerBase.alterGameState');
-    try {
-      return super.alterGameState(newGameState);
-    } finally {
-      _$ControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   void _resetPreviousBlock() {
     final _$actionInfo = _$ControllerBaseActionController.startAction(
         name: 'ControllerBase._resetPreviousBlock');
@@ -140,22 +129,44 @@ mixin _$Controller on ControllerBase, Store {
   }
 
   @override
-  void fallingAnimation(int rowIndex, int colIndex) {
+  void _handleCollision() {
     final _$actionInfo = _$ControllerBaseActionController.startAction(
-        name: 'ControllerBase.fallingAnimation');
+        name: 'ControllerBase._handleCollision');
     try {
-      return super.fallingAnimation(rowIndex, colIndex);
+      return super._handleCollision();
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void _handleCollision() {
+  void _handleNoCollision() {
     final _$actionInfo = _$ControllerBaseActionController.startAction(
-        name: 'ControllerBase._handleCollision');
+        name: 'ControllerBase._handleNoCollision');
     try {
-      return super._handleCollision();
+      return super._handleNoCollision();
+    } finally {
+      _$ControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void _handleCollisionCases() {
+    final _$actionInfo = _$ControllerBaseActionController.startAction(
+        name: 'ControllerBase._handleCollisionCases');
+    try {
+      return super._handleCollisionCases();
+    } finally {
+      _$ControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void fallingAnimation(int rowIndex, int colIndex) {
+    final _$actionInfo = _$ControllerBaseActionController.startAction(
+        name: 'ControllerBase.fallingAnimation');
+    try {
+      return super.fallingAnimation(rowIndex, colIndex);
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -189,6 +200,17 @@ mixin _$Controller on ControllerBase, Store {
         name: 'ControllerBase._endGame');
     try {
       return super._endGame();
+    } finally {
+      _$ControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void startGame() {
+    final _$actionInfo = _$ControllerBaseActionController.startAction(
+        name: 'ControllerBase.startGame');
+    try {
+      return super.startGame();
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }

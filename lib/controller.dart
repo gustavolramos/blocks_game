@@ -8,14 +8,18 @@ part 'controller.g.dart';
 class Controller = ControllerBase with _$Controller;
 
 abstract class ControllerBase with Store {
+
   Color fallingColor = Colors.pink.shade200;
   int gridSize = 5;
+
+  // @observables are state variables that should only be modified by @actions
+  // Once their value changes, the Observer widget is notified and rebuilds whatever is necessary
 
   @observable
   GameState gameState = GameState.notStarted;
 
   @observable
-  late List<List<dynamic>> blockColors = List.generate(gridSize, (index) => List.filled(gridSize, Colors.white));
+  late List<List<Color>> blockColors = List.generate(gridSize, (index) => List.filled(gridSize, Colors.white));
 
   @observable
   bool isFalling = false;
@@ -29,21 +33,52 @@ abstract class ControllerBase with Store {
   @observable
   int score = 0;
 
-  @action
-  alterGameState(GameState newGameState) => gameState = newGameState;
+  // An @action is simply a method that modifies @observables
 
-  // Guarantees that everytime a block moves down the column, the previous one becomes white again
   @action
   void _resetPreviousBlock() {
-    if (fallingRowIndex - 1 > 0) {
+    if (fallingRowIndex > 0) {
       blockColors[fallingRowIndex - 1][fallingColIndex] = Colors.white;
     }
   }
 
-  // This method initiates the block's falling animation, and potentially calls the "_handleCollision" method
+  @action
+  void _handleCollision() {
+    isFalling = false;
+    blockColors[fallingRowIndex][fallingColIndex] = fallingColor;
+    _resetPreviousBlock();
+    _calculateColoredBlocksScore();
+  }
+
+  @action
+  void _handleNoCollision() {
+    fallingRowIndex++;
+    _resetPreviousBlock();
+  }
+
+  @action
+  void _handleCollisionCases() {
+    // The colored block has collided with the bottom of the screen
+    if (fallingRowIndex == gridSize - 1) {
+      _handleCollision();
+      // The colored block has collided with a colored block below it
+    } else if (fallingRowIndex < gridSize - 1 && blockColors[fallingRowIndex + 1][fallingColIndex] != Colors.white) {
+      _handleCollision();
+      // The colored block has formed a bridge with one colored block at each side
+    } else if (fallingRowIndex < gridSize - 1 &&
+        fallingColIndex > 0 &&
+        fallingColIndex < 4 &&
+        blockColors[fallingRowIndex][fallingColIndex - 1] != Colors.white &&
+        blockColors[fallingRowIndex][fallingColIndex + 1] != Colors.white) {
+      _handleCollision();
+      // The colored block has not yet collided with anything
+    } else {
+      _handleNoCollision();
+    }
+  }
+
   @action
   void fallingAnimation(int rowIndex, int colIndex) {
-
     blockColors[rowIndex][colIndex] = fallingColor;
     fallingRowIndex = rowIndex;
     fallingColIndex = colIndex;
@@ -52,7 +87,7 @@ abstract class ControllerBase with Store {
 
     Timer.periodic(duration, (timer) {
       if (isFalling) {
-        _handleCollision();
+        _handleCollisionCases();
       } else {
         _resetPreviousBlock();
         timer.cancel();
@@ -61,52 +96,15 @@ abstract class ControllerBase with Store {
   }
 
   @action
-  // This method assures every collision outcome is properly dealt with
-  void _handleCollision() {
-    // If the block has reached the lowest point possible, stop falling, change colors, and calculate the score
-    if (fallingRowIndex == 5 - 1) {
-      isFalling = false;
-      blockColors[fallingRowIndex][fallingColIndex] = fallingColor;
-      _resetPreviousBlock();
-      _calculateColoredBlocksScore();
-      // If the block has collided below, stop falling, change colors, and calculate the score
-    } else if (fallingRowIndex < 5 - 1 && blockColors[fallingRowIndex + 1][fallingColIndex] != Colors.white) {
-      isFalling = false;
-      blockColors[fallingRowIndex][fallingColIndex] = fallingColor;
-      _resetPreviousBlock();
-      _calculateColoredBlocksScore();
-
-      // If the block has collided with colored blocks on both sides, creating a "bridge", stop falling, change colors, and calculate the score
-    } else if (fallingRowIndex < 5 - 1 &&
-        fallingColIndex > 0 &&
-        blockColors[fallingRowIndex][fallingColIndex - 1] != Colors.white &&
-        blockColors[fallingRowIndex][fallingColIndex + 1] != Colors.white) {
-      isFalling = false;
-      blockColors[fallingRowIndex][fallingColIndex] = fallingColor;
-      _resetPreviousBlock();
-      _calculateColoredBlocksScore();
-      // No collision, continue falling
-    } else {
-      _resetPreviousBlock();
-      fallingRowIndex++;
-    }
-  }
-
-  @action
   void _calculateColoredBlocksScore() {
-    // Get the color of the current block
     Color currentColor = blockColors[fallingRowIndex][fallingColIndex];
 
-    // Case 1: If a colored block is on the lowest row possible, it scores 5 points
-    if (fallingRowIndex == 5 - 1 && currentColor != Colors.white) {
+    if (fallingRowIndex == gridSize - 1 && currentColor != Colors.white) {
       score += 5;
-    }
-
-    // Case 2: If a colored block has other colored blocks below it, it scores 5 points + 5 points for each colored block below it
-    if (fallingRowIndex < 5 - 1 && blockColors[fallingRowIndex + 1][fallingColIndex] != Colors.white) {
+    } else if (fallingRowIndex < gridSize - 1 && blockColors[fallingRowIndex + 1][fallingColIndex] != Colors.white) {
       int coloredBlocksBelow = 0;
 
-      for (int i = fallingRowIndex + 1; i < 5; i++) {
+      for (int i = fallingRowIndex + 1; i < gridSize; i++) {
         if (blockColors[i][fallingColIndex] != Colors.white) {
           coloredBlocksBelow++;
         } else {
@@ -117,10 +115,7 @@ abstract class ControllerBase with Store {
       if (coloredBlocksBelow > 0) {
         score += 5 + (5 * coloredBlocksBelow);
       }
-    }
-
-    // Case 3: If a colored block formed a bridge with other colored blocks, it's scores 5 points.
-    if (fallingRowIndex < 5 - 1 &&
+    } else if (fallingRowIndex < gridSize - 1 &&
         fallingColIndex > 0 &&
         blockColors[fallingRowIndex][fallingColIndex - 1] != Colors.white &&
         blockColors[fallingRowIndex][fallingColIndex + 1] != Colors.white) {
@@ -130,8 +125,7 @@ abstract class ControllerBase with Store {
 
   @action
   void _calculateWhiteBlocksScore() {
-    // Case 4: All white blocks posistioned below a colored block, score 10 points
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < gridSize; i++) {
       if (blockColors[i][fallingColIndex] != Colors.white) {
         for (int j = i - 1; j >= 0; j--) {
           if (blockColors[j][fallingColIndex] == Colors.white) {
@@ -175,7 +169,12 @@ abstract class ControllerBase with Store {
   @action
   void _endGame() {
     gameState = GameState.finished;
+    blockColors = List.generate(gridSize, (index) => List.filled(gridSize, Colors.white));
+  }
+
+  @action
+  void startGame() {
+    gameState = GameState.playing;
     score = 0;
-    blockColors = List.generate(5, (index) => List.filled(5, Colors.white));
   }
 }
