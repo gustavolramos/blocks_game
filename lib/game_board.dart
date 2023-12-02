@@ -19,7 +19,7 @@ class _GameBoardState extends State<GameBoard> {
         AppBar(
           leading: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: Image.asset('assets/sisterly_logo.png'),
+            child: Image.asset('assets/sisterly_games_logo.png'),
           ),
           title: Text('Blocks Game - Score: ${_controller.score}'),
           actions: [
