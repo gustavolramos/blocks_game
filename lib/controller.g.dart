@@ -109,7 +109,7 @@ mixin _$Controller on ControllerBase, Store {
       context: context);
 
   @override
-  Future<void> showEndGameConfirmationDialog(dynamic context) {
+  Future<void> showEndGameConfirmationDialog(BuildContext context) {
     return _$showEndGameConfirmationDialogAsyncAction
         .run(() => super.showEndGameConfirmationDialog(context));
   }
@@ -129,11 +129,11 @@ mixin _$Controller on ControllerBase, Store {
   }
 
   @override
-  void _handleCollision() {
+  void _handleCollision(BuildContext context) {
     final _$actionInfo = _$ControllerBaseActionController.startAction(
         name: 'ControllerBase._handleCollision');
     try {
-      return super._handleCollision();
+      return super._handleCollision(context);
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -151,22 +151,22 @@ mixin _$Controller on ControllerBase, Store {
   }
 
   @override
-  void _handleCollisionCases() {
+  void _handleCollisionCases(BuildContext context) {
     final _$actionInfo = _$ControllerBaseActionController.startAction(
         name: 'ControllerBase._handleCollisionCases');
     try {
-      return super._handleCollisionCases();
+      return super._handleCollisionCases(context);
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void fallingAnimation(int rowIndex, int colIndex) {
+  void fallingAnimation(int rowIndex, int colIndex, BuildContext context) {
     final _$actionInfo = _$ControllerBaseActionController.startAction(
         name: 'ControllerBase.fallingAnimation');
     try {
-      return super.fallingAnimation(rowIndex, colIndex);
+      return super.fallingAnimation(rowIndex, colIndex, context);
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -195,11 +195,11 @@ mixin _$Controller on ControllerBase, Store {
   }
 
   @override
-  void _endGame() {
+  void _showEndGameDialog(BuildContext context) {
     final _$actionInfo = _$ControllerBaseActionController.startAction(
-        name: 'ControllerBase._endGame');
+        name: 'ControllerBase._showEndGameDialog');
     try {
-      return super._endGame();
+      return super._showEndGameDialog(context);
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -211,6 +211,17 @@ mixin _$Controller on ControllerBase, Store {
         name: 'ControllerBase.startGame');
     try {
       return super.startGame();
+    } finally {
+      _$ControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void _endGame() {
+    final _$actionInfo = _$ControllerBaseActionController.startAction(
+        name: 'ControllerBase._endGame');
+    try {
+      return super._endGame();
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }

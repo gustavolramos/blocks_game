@@ -21,22 +21,23 @@ class GameAppBar extends StatelessWidget {
           actions: [
             if (controller.gameState == GameState.notStarted || controller.gameState == GameState.finished)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: ElevatedButton(
-                  onPressed: () {
-                    controller.startGame();
-                  },
-                  child: const Text('Start playing'),
-                ),
-              ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      controller.startGame();
+                    },
+                    icon: const Icon(Icons.play_arrow),
+                    label: const Text('Start playing'),
+                  )),
             if (controller.gameState == GameState.playing)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: ElevatedButton(
+                child: ElevatedButton.icon(
                   onPressed: () {
                     controller.showEndGameConfirmationDialog(context);
                   },
-                  child: const Text('End game'),
+                  icon: const Icon(Icons.close),
+                  label: const Text('End game'),
                 ),
               ),
           ],

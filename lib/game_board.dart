@@ -36,7 +36,7 @@ class _GameBoardState extends State<GameBoard> {
                     return GestureDetector(
                       onTap: () {
                         if (_controller.gameState == GameState.playing && !_controller.isFalling) {
-                          _controller.fallingAnimation(rowIndex, colIndex);
+                          _controller.fallingAnimation(rowIndex, colIndex, context);
                         }
                       },
                       child: AnimatedContainer(

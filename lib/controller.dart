@@ -8,7 +8,6 @@ part 'controller.g.dart';
 class Controller = ControllerBase with _$Controller;
 
 abstract class ControllerBase with Store {
-
   Color fallingColor = Colors.pink.shade200;
   int gridSize = 5;
 
@@ -43,11 +42,12 @@ abstract class ControllerBase with Store {
   }
 
   @action
-  void _handleCollision() {
+  void _handleCollision(BuildContext context) {
     isFalling = false;
     blockColors[fallingRowIndex][fallingColIndex] = fallingColor;
     _resetPreviousBlock();
     _calculateColoredBlocksScore();
+    _autoEndGame(context);
   }
 
   @action
@@ -57,20 +57,20 @@ abstract class ControllerBase with Store {
   }
 
   @action
-  void _handleCollisionCases() {
+  void _handleCollisionCases(BuildContext context) {
     // The colored block has collided with the bottom of the screen
     if (fallingRowIndex == gridSize - 1) {
-      _handleCollision();
+      _handleCollision(context);
       // The colored block has collided with a colored block below it
     } else if (fallingRowIndex < gridSize - 1 && blockColors[fallingRowIndex + 1][fallingColIndex] != Colors.white) {
-      _handleCollision();
+      _handleCollision(context);
       // The colored block has formed a bridge with one colored block at each side
     } else if (fallingRowIndex < gridSize - 1 &&
         fallingColIndex > 0 &&
         fallingColIndex < 4 &&
         blockColors[fallingRowIndex][fallingColIndex - 1] != Colors.white &&
         blockColors[fallingRowIndex][fallingColIndex + 1] != Colors.white) {
-      _handleCollision();
+      _handleCollision(context);
       // The colored block has not yet collided with anything
     } else {
       _handleNoCollision();
@@ -78,7 +78,7 @@ abstract class ControllerBase with Store {
   }
 
   @action
-  void fallingAnimation(int rowIndex, int colIndex) {
+  void fallingAnimation(int rowIndex, int colIndex, BuildContext context) {
     blockColors[rowIndex][colIndex] = fallingColor;
     fallingRowIndex = rowIndex;
     fallingColIndex = colIndex;
@@ -87,7 +87,7 @@ abstract class ControllerBase with Store {
 
     Timer.periodic(duration, (timer) {
       if (isFalling) {
-        _handleCollisionCases();
+        _handleCollisionCases(context);
       } else {
         _resetPreviousBlock();
         timer.cancel();
@@ -139,7 +139,7 @@ abstract class ControllerBase with Store {
   }
 
   @action
-  Future<void> showEndGameConfirmationDialog(context) async {
+  Future<void> showEndGameConfirmationDialog(BuildContext context) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -167,14 +167,54 @@ abstract class ControllerBase with Store {
   }
 
   @action
-  void _endGame() {
-    gameState = GameState.finished;
-    blockColors = List.generate(gridSize, (index) => List.filled(gridSize, Colors.white));
+  void _showEndGameDialog(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Thanks for playing!'),
+          content: Text('Your Score: $score'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                startGame();
+              },
+              child: const Text('Play Again?'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @action
   void startGame() {
     gameState = GameState.playing;
     score = 0;
+  }
+
+  @action
+  void _endGame() {
+    gameState = GameState.finished;
+    blockColors = List.generate(gridSize, (index) => List.filled(gridSize, Colors.white));
+  }
+
+  // If there are 10 blocks with "fallingColor", the game ends
+  void _autoEndGame(BuildContext context) {
+    int count = 0;
+
+    for (int i = 0; i < gridSize; i++) {
+      for (int j = 0; j < gridSize; j++) {
+        if (blockColors[i][j] == fallingColor) {
+          count++;
+        }
+      }
+    }
+
+    if (count >= 10) {
+      _endGame();
+      _showEndGameDialog(context);
+    }
   }
 }
