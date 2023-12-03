@@ -18,7 +18,7 @@ abstract class ControllerBase with Store {
   GameState gameState = GameState.notStarted;
 
   @observable
-  ObservableList<Color> blockColors = ObservableList<Color>();
+  List<ObservableList<Color>> blockColors = [];
 
   @observable
   bool isFalling = false;
@@ -36,13 +36,16 @@ abstract class ControllerBase with Store {
   // This method/action essentially populates the blockColors observable
   @action
   void initializeBlockColors() {
-    blockColors = ObservableList<Color>.of(List.filled(gridSize * gridSize, Colors.white));
+    blockColors = List.generate(
+      gridSize,
+      (index) => ObservableList<Color>.of(List.filled(gridSize, Colors.white)),
+    );
   }
 
   @action
   void startGame() {
-    _clearBoard();
     gameState = GameState.playing;
+    initializeBlockColors();
     score = 0;
   }
 
@@ -50,7 +53,7 @@ abstract class ControllerBase with Store {
   void fallingAnimation(int rowIndex, int colIndex, BuildContext context) {
     fallingRowIndex = rowIndex;
     fallingColIndex = colIndex;
-    blockColors[rowIndex * gridSize + colIndex] = fallingColor;
+    blockColors[fallingRowIndex][fallingColIndex] = fallingColor;
     isFalling = true;
     const duration = Duration(milliseconds: 250);
 
@@ -67,15 +70,15 @@ abstract class ControllerBase with Store {
   @action
   void resetPreviousBlock() {
     if (fallingRowIndex > 0) {
-      blockColors[(fallingRowIndex - 1) * gridSize + fallingColIndex] = Colors.white;
+      blockColors[fallingRowIndex - 1][fallingColIndex] = Colors.white;
     }
   }
 
   @action
   void _handleCollision(BuildContext context) {
     isFalling = false;
-    blockColors[fallingRowIndex * gridSize + fallingColIndex] = fallingColor;
     resetPreviousBlock();
+    blockColors[fallingRowIndex][fallingColIndex] = fallingColor;
     _calculateColoredBlocksScore();
     _autoEndGame(context);
   }
@@ -92,14 +95,14 @@ abstract class ControllerBase with Store {
     if (fallingRowIndex == gridSize - 1) {
       _handleCollision(context);
       // The colored block has collided with a colored block below it
-    } else if (fallingRowIndex < gridSize - 1 && blockColors[(fallingRowIndex + 1) * gridSize + fallingColIndex] != Colors.white) {
+    } else if (fallingRowIndex < gridSize - 1 && blockColors[fallingRowIndex + 1][fallingColIndex] != Colors.white) {
       _handleCollision(context);
       // The colored block has formed a bridge with one colored block at each side
     } else if (fallingRowIndex < gridSize - 1 &&
         fallingColIndex > 0 &&
         fallingColIndex < 4 &&
-        blockColors[fallingRowIndex * gridSize + fallingColIndex - 1] != Colors.white &&
-        blockColors[fallingRowIndex * gridSize + fallingColIndex + 1] != Colors.white) {
+        blockColors[fallingRowIndex][fallingColIndex - 1] != Colors.white &&
+        blockColors[fallingRowIndex][fallingColIndex + 1] != Colors.white) {
       _handleCollision(context);
       // The colored block has not yet collided with anything
     } else {
@@ -110,15 +113,15 @@ abstract class ControllerBase with Store {
   // This method is called after every collision, as opposed to the white blocks which are only calculated at the end of the game
   @action
   void _calculateColoredBlocksScore() {
-    Color currentColor = blockColors[fallingRowIndex * gridSize + fallingColIndex];
+    Color currentColor = blockColors[fallingRowIndex][fallingColIndex];
 
     if (fallingRowIndex == gridSize - 1 && currentColor != Colors.white) {
       score += 5;
-    } else if (fallingRowIndex < gridSize - 1 && blockColors[(fallingRowIndex + 1) * gridSize + fallingColIndex] != Colors.white) {
+    } else if (fallingRowIndex < gridSize - 1 && blockColors[fallingRowIndex + 1][fallingColIndex] != Colors.white) {
       int coloredBlocksBelow = 0;
 
       for (int i = fallingRowIndex + 1; i < gridSize; i++) {
-        if (blockColors[i * gridSize + fallingColIndex] != Colors.white) {
+        if (blockColors[i][fallingColIndex] != Colors.white) {
           coloredBlocksBelow++;
         } else {
           break;
@@ -130,21 +133,21 @@ abstract class ControllerBase with Store {
       }
     } else if (fallingRowIndex < gridSize - 1 &&
         fallingColIndex > 0 &&
-        blockColors[fallingRowIndex * gridSize + fallingColIndex - 1] != Colors.white &&
-        blockColors[fallingRowIndex * gridSize + fallingColIndex + 1] != Colors.white) {
+        blockColors[fallingRowIndex][fallingColIndex - 1] != Colors.white &&
+        blockColors[fallingRowIndex][fallingColIndex + 1] != Colors.white) {
       score += 5;
     }
   }
 
-  // I opted to calculate the score for the white blocks at the end of the game
+  // Calculates the score for the white blocks at the end of the game
   @action
   void _calculateWhiteBlocksScore() {
     for (int colIndex = 0; colIndex < gridSize; colIndex++) {
       for (int rowIndex = 1; rowIndex < gridSize; rowIndex++) {
-        if (blockColors[rowIndex * gridSize + colIndex] == Colors.white) {
+        if (blockColors[rowIndex][colIndex] == Colors.white) {
           // Check if there's a colored block above the white block
           for (int i = rowIndex - 1; i >= 0; i--) {
-            if (blockColors[i * gridSize + colIndex] != Colors.white) {
+            if (blockColors[i][colIndex] != Colors.white) {
               // Found a colored block above the white block
               score += 10;
               break;
@@ -199,7 +202,7 @@ abstract class ControllerBase with Store {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                _clearBoard();
+                initializeBlockColors();
                 startGame();
               },
               child: const Text('Play Again'),
@@ -216,7 +219,7 @@ abstract class ControllerBase with Store {
 
     for (int i = 0; i < gridSize; i++) {
       for (int j = 0; j < gridSize; j++) {
-        if (blockColors[i * gridSize + j] == fallingColor) {
+        if (blockColors[i][j] == fallingColor) {
           count++;
         }
       }
@@ -227,11 +230,5 @@ abstract class ControllerBase with Store {
       gameState = GameState.finished;
       _showFinalScoreDialog(context);
     }
-  }
-
-  // Utility method to clear the game board at key points
-  @action
-  void _clearBoard() {
-    blockColors = ObservableList<Color>.of(List.filled(gridSize * gridSize, Colors.white));
   }
 }

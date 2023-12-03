@@ -29,13 +29,13 @@ mixin _$Controller on ControllerBase, Store {
       Atom(name: 'ControllerBase.blockColors', context: context);
 
   @override
-  ObservableList<Color> get blockColors {
+  List<ObservableList<Color>> get blockColors {
     _$blockColorsAtom.reportRead();
     return super.blockColors;
   }
 
   @override
-  set blockColors(ObservableList<Color> value) {
+  set blockColors(List<ObservableList<Color>> value) {
     _$blockColorsAtom.reportWrite(value, super.blockColors, () {
       super.blockColors = value;
     });
@@ -222,17 +222,6 @@ mixin _$Controller on ControllerBase, Store {
         name: 'ControllerBase._showFinalScoreDialog');
     try {
       return super._showFinalScoreDialog(context);
-    } finally {
-      _$ControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void _clearBoard() {
-    final _$actionInfo = _$ControllerBaseActionController.startAction(
-        name: 'ControllerBase._clearBoard');
-    try {
-      return super._clearBoard();
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }

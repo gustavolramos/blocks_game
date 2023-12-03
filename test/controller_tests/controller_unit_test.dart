@@ -12,10 +12,14 @@ void main() {
     controller = Controller();
   });
 
-  test('When the initializeBlockColors action is called, the blockColors observble is filled with 25 white colored blocks ', () {
+  test('When the initializeBlockColors action is called, the blockColors observable is filled with 25 white colored blocks', () {
     controller.initializeBlockColors();
-    expect(controller.blockColors, List<Color>.filled(controller.gridSize * controller.gridSize, Colors.white));
-    expect(controller.blockColors.length, controller.gridSize * controller.gridSize);
+    final expectedColors = List.generate(
+      controller.gridSize,
+      (index) => List.filled(controller.gridSize, Colors.white),
+    );
+
+    expect(controller.blockColors, expectedColors);
   });
 
   test('When the startGame action is called, the gameState observable is changed to "GameState.playing", and the score observable becomes zero', () {
@@ -25,13 +29,18 @@ void main() {
   });
 
   test('When the resetPreviousBlock action is called, the block above the current block has its color changed back to white ', () {
-    controller.blockColors = ObservableList<Color>.of([Colors.white, Colors.pink, Colors.white]);
-    controller.fallingRowIndex = 1; 
-    controller.fallingColIndex = 1; 
+    controller.blockColors = [
+      ObservableList<Color>.of([Colors.white, Colors.pink, Colors.white]),
+    ];
+
+    controller.fallingRowIndex = 1;
+    controller.fallingColIndex = 1;
 
     controller.resetPreviousBlock();
 
-    expect(controller.blockColors, [Colors.white, Colors.white, Colors.white]);
+    expect(controller.blockColors, [
+      [Colors.white, Colors.white, Colors.white],
+    ]);
   });
 
   test('When the handleNoCollision, the value of fallingRowIndex increases by one', () {

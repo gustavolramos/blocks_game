@@ -18,7 +18,7 @@ class GameAppBar extends StatelessWidget implements PreferredSizeWidget {
       builder: (context) {
         return AppBar(
           leading: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Image.asset('assets/sisterly_games_logo.png'),
           ),
           title: Text('Blocks - Score: ${controller.score}'),
