@@ -5,5 +5,6 @@ ThemeData standardTheme = ThemeData(
   colorSchemeSeed: Colors.pink,
   appBarTheme: AppBarTheme(
     color: Colors.pink.shade200
-  ), 
+  ),
+  scaffoldBackgroundColor: Colors.white, 
   );
