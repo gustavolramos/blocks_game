@@ -3,6 +3,7 @@
 This project is Gustavo Ramos' submission for Sisterly's Flutter Developer role. 
 
 - It utilizes Mobx (with code generation) for state management.
+- It has a few unit tests and widget tests as well.
 - A custom logo called "Sisterly Games" created on Figma is being used for android and the web
 
 # Commands
