@@ -29,13 +29,13 @@ mixin _$Controller on ControllerBase, Store {
       Atom(name: 'ControllerBase.blockColors', context: context);
 
   @override
-  ObservableList<InvalidType> get blockColors {
+  ObservableList<Color> get blockColors {
     _$blockColorsAtom.reportRead();
     return super.blockColors;
   }
 
   @override
-  set blockColors(ObservableList<InvalidType> value) {
+  set blockColors(ObservableList<Color> value) {
     _$blockColorsAtom.reportWrite(value, super.blockColors, () {
       super.blockColors = value;
     });

@@ -18,7 +18,7 @@ abstract class ControllerBase with Store {
   GameState gameState = GameState.notStarted;
 
   @observable
-  ObservableList<Color> blockColors = ObservableList<Color>();
+  ObservableList<Color> blockColors = ObservableList<Color>(); 
 
   @observable
   bool isFalling = false;
