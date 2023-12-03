@@ -3,10 +3,14 @@ import 'package:sisterly_game_challenge/controllers/controller.dart';
 import 'package:sisterly_game_challenge/enums.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
-class GameAppBar extends StatelessWidget {
+class GameAppBar extends StatelessWidget implements PreferredSizeWidget {
   const GameAppBar({super.key, required this.controller});
 
   final Controller controller;
+
+  // This is needed to implement PreferredSizeWidget and subsititute the regular appBar
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +21,7 @@ class GameAppBar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: Image.asset('assets/sisterly_games_logo.png'),
           ),
-          title: Text('Blocks Game - Score: ${controller.score}'),
+          title: Text('Blocks - Score: ${controller.score}'),
           actions: [
             if (controller.gameState == GameState.notStarted || controller.gameState == GameState.finished)
               Padding(

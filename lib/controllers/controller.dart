@@ -33,7 +33,7 @@ abstract class ControllerBase with Store {
   int score = 0;
 
   // An @action is simply a method that modifies @observables
-
+  // This method/action essentially populates the blockColors observable
   @action
   void initializeBlockColors() {
     blockColors = ObservableList<Color>.of(List.filled(gridSize * gridSize, Colors.white));
@@ -107,6 +107,7 @@ abstract class ControllerBase with Store {
     }
   }
 
+  // This method is called after every collision, as opposed to the white blocks which are only calculated at the end of the game
   @action
   void _calculateColoredBlocksScore() {
     Color currentColor = blockColors[fallingRowIndex * gridSize + fallingColIndex];
@@ -135,6 +136,7 @@ abstract class ControllerBase with Store {
     }
   }
 
+  // I opted to calculate the score for the white blocks at the end of the game
   @action
   void _calculateWhiteBlocksScore() {
     for (int colIndex = 0; colIndex < gridSize; colIndex++) {
@@ -208,7 +210,7 @@ abstract class ControllerBase with Store {
     );
   }
 
-  // If there are 10 blocks with "fallingColor", the game ends
+  // If there are 10 blocks with "fallingColor", the game ends automatically
   void _autoEndGame(BuildContext context) {
     int count = 0;
 
@@ -227,6 +229,7 @@ abstract class ControllerBase with Store {
     }
   }
 
+  // Utility method to clear the game board at key points
   @action
   void _clearBoard() {
     blockColors = ObservableList<Color>.of(List.filled(gridSize * gridSize, Colors.white));
