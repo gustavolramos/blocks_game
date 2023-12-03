@@ -29,13 +29,13 @@ mixin _$Controller on ControllerBase, Store {
       Atom(name: 'ControllerBase.blockColors', context: context);
 
   @override
-  ObservableList<List<Color>> get blockColors {
+  ObservableList<InvalidType> get blockColors {
     _$blockColorsAtom.reportRead();
     return super.blockColors;
   }
 
   @override
-  set blockColors(ObservableList<List<Color>> value) {
+  set blockColors(ObservableList<InvalidType> value) {
     _$blockColorsAtom.reportWrite(value, super.blockColors, () {
       super.blockColors = value;
     });
@@ -129,6 +129,17 @@ mixin _$Controller on ControllerBase, Store {
   }
 
   @override
+  void startGame() {
+    final _$actionInfo = _$ControllerBaseActionController.startAction(
+        name: 'ControllerBase.startGame');
+    try {
+      return super.startGame();
+    } finally {
+      _$ControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void fallingAnimation(int rowIndex, int colIndex, BuildContext context) {
     final _$actionInfo = _$ControllerBaseActionController.startAction(
         name: 'ControllerBase.fallingAnimation');
@@ -140,11 +151,11 @@ mixin _$Controller on ControllerBase, Store {
   }
 
   @override
-  void _resetPreviousBlock() {
+  void resetPreviousBlock() {
     final _$actionInfo = _$ControllerBaseActionController.startAction(
-        name: 'ControllerBase._resetPreviousBlock');
+        name: 'ControllerBase.resetPreviousBlock');
     try {
-      return super._resetPreviousBlock();
+      return super.resetPreviousBlock();
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -162,11 +173,11 @@ mixin _$Controller on ControllerBase, Store {
   }
 
   @override
-  void _handleNoCollision() {
+  void handleNoCollision() {
     final _$actionInfo = _$ControllerBaseActionController.startAction(
-        name: 'ControllerBase._handleNoCollision');
+        name: 'ControllerBase.handleNoCollision');
     try {
-      return super._handleNoCollision();
+      return super.handleNoCollision();
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -206,33 +217,22 @@ mixin _$Controller on ControllerBase, Store {
   }
 
   @override
-  void _showEndGameDialog(BuildContext context) {
+  void _showFinalScoreDialog(BuildContext context) {
     final _$actionInfo = _$ControllerBaseActionController.startAction(
-        name: 'ControllerBase._showEndGameDialog');
+        name: 'ControllerBase._showFinalScoreDialog');
     try {
-      return super._showEndGameDialog(context);
+      return super._showFinalScoreDialog(context);
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void startGame() {
+  void _clearBoard() {
     final _$actionInfo = _$ControllerBaseActionController.startAction(
-        name: 'ControllerBase.startGame');
+        name: 'ControllerBase._clearBoard');
     try {
-      return super.startGame();
-    } finally {
-      _$ControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void _endGame() {
-    final _$actionInfo = _$ControllerBaseActionController.startAction(
-        name: 'ControllerBase._endGame');
-    try {
-      return super._endGame();
+      return super._clearBoard();
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }

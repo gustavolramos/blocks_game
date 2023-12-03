@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:sisterly_game_challenge/app_bar.dart';
-import 'package:sisterly_game_challenge/controller.dart';
-import 'package:sisterly_game_challenge/utilities.dart';
+import 'package:sisterly_game_challenge/controllers/controller.dart';
+import 'package:sisterly_game_challenge/widgets/app_bar.dart';
+import 'package:sisterly_game_challenge/widgets/game_status.dart';
+import 'package:sisterly_game_challenge/enums.dart';
 
 class GameBoard extends StatefulWidget {
   const GameBoard({super.key});
@@ -25,6 +26,7 @@ class _GameBoardState extends State<GameBoard> {
     return Column(
       children: [
         GameAppBar(controller: _controller),
+        GameStatus(controller: _controller),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -40,11 +42,9 @@ class _GameBoardState extends State<GameBoard> {
                 return Observer(builder: (context) {
                   return GestureDetector(
                     onTap: () {
-                      setState(() {
-                        if (_controller.gameState == GameState.playing && _controller.isFalling == false) {
-                          _controller.fallingAnimation(rowIndex, colIndex, context);
-                        }
-                      });
+                      if (_controller.gameState == GameState.playing && _controller.isFalling == false) {
+                        _controller.fallingAnimation(rowIndex, colIndex, context);
+                      }
                     },
                     child: Container(
                       width: 50.0,
@@ -52,7 +52,7 @@ class _GameBoardState extends State<GameBoard> {
                       decoration: BoxDecoration(
                         borderRadius: const BorderRadius.all(Radius.circular(8)),
                         border: Border.all(color: Colors.black),
-                        color: _controller.blockColors[rowIndex][colIndex],
+                        color: _controller.blockColors[rowIndex * _controller.gridSize + colIndex],
                       ),
                     ),
                   );

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
-import 'package:sisterly_game_challenge/utilities.dart';
+import 'package:sisterly_game_challenge/enums.dart';
 
 part 'controller.g.dart';
 
@@ -18,7 +18,7 @@ abstract class ControllerBase with Store {
   GameState gameState = GameState.notStarted;
 
   @observable
-  ObservableList<List<Color>> blockColors = ObservableList<List<Color>>();
+  ObservableList<Color> blockColors = ObservableList<Color>();
 
   @observable
   bool isFalling = false;
@@ -36,47 +36,53 @@ abstract class ControllerBase with Store {
 
   @action
   void initializeBlockColors() {
-    blockColors.addAll(List.generate(gridSize, (index) => List.filled(gridSize, Colors.white)));
+    blockColors = ObservableList<Color>.of(List.filled(gridSize * gridSize, Colors.white));
+  }
+
+  @action
+  void startGame() {
+    gameState = GameState.playing;
+    score = 0;
   }
 
   @action
   void fallingAnimation(int rowIndex, int colIndex, BuildContext context) {
     fallingRowIndex = rowIndex;
     fallingColIndex = colIndex;
-    blockColors[fallingRowIndex][fallingColIndex] = fallingColor;
+    blockColors[rowIndex * gridSize + colIndex] = fallingColor;
     isFalling = true;
-    const duration = Duration(seconds: 1);
+    const duration = Duration(milliseconds: 500);
 
     Timer.periodic(duration, (timer) {
       if (isFalling) {
         _handleCollisionCases(context);
       } else {
-        _resetPreviousBlock();
+        resetPreviousBlock();
         timer.cancel();
       }
     });
   }
 
   @action
-  void _resetPreviousBlock() {
+  void resetPreviousBlock() {
     if (fallingRowIndex > 0) {
-      blockColors[fallingRowIndex - 1][fallingColIndex] = Colors.white;
+      blockColors[(fallingRowIndex - 1) * gridSize + fallingColIndex] = Colors.white;
     }
   }
 
   @action
   void _handleCollision(BuildContext context) {
     isFalling = false;
-    blockColors[fallingRowIndex][fallingColIndex] = fallingColor;
-    _resetPreviousBlock();
+    blockColors[fallingRowIndex * gridSize + fallingColIndex] = fallingColor;
+    resetPreviousBlock();
     _calculateColoredBlocksScore();
     _autoEndGame(context);
   }
 
   @action
-  void _handleNoCollision() {
+  void handleNoCollision() {
     fallingRowIndex++;
-    _resetPreviousBlock();
+    resetPreviousBlock();
   }
 
   @action
@@ -85,32 +91,32 @@ abstract class ControllerBase with Store {
     if (fallingRowIndex == gridSize - 1) {
       _handleCollision(context);
       // The colored block has collided with a colored block below it
-    } else if (fallingRowIndex < gridSize - 1 && blockColors[fallingRowIndex + 1][fallingColIndex] != Colors.white) {
+    } else if (fallingRowIndex < gridSize - 1 && blockColors[(fallingRowIndex + 1) * gridSize + fallingColIndex] != Colors.white) {
       _handleCollision(context);
       // The colored block has formed a bridge with one colored block at each side
     } else if (fallingRowIndex < gridSize - 1 &&
         fallingColIndex > 0 &&
         fallingColIndex < 4 &&
-        blockColors[fallingRowIndex][fallingColIndex - 1] != Colors.white &&
-        blockColors[fallingRowIndex][fallingColIndex + 1] != Colors.white) {
+        blockColors[fallingRowIndex * gridSize + fallingColIndex - 1] != Colors.white &&
+        blockColors[fallingRowIndex * gridSize + fallingColIndex + 1] != Colors.white) {
       _handleCollision(context);
       // The colored block has not yet collided with anything
     } else {
-      _handleNoCollision();
+      handleNoCollision();
     }
   }
 
   @action
   void _calculateColoredBlocksScore() {
-    Color currentColor = blockColors[fallingRowIndex][fallingColIndex];
+    Color currentColor = blockColors[fallingRowIndex * gridSize + fallingColIndex];
 
     if (fallingRowIndex == gridSize - 1 && currentColor != Colors.white) {
       score += 5;
-    } else if (fallingRowIndex < gridSize - 1 && blockColors[fallingRowIndex + 1][fallingColIndex] != Colors.white) {
+    } else if (fallingRowIndex < gridSize - 1 && blockColors[(fallingRowIndex + 1) * gridSize + fallingColIndex] != Colors.white) {
       int coloredBlocksBelow = 0;
 
       for (int i = fallingRowIndex + 1; i < gridSize; i++) {
-        if (blockColors[i][fallingColIndex] != Colors.white) {
+        if (blockColors[i * gridSize + fallingColIndex] != Colors.white) {
           coloredBlocksBelow++;
         } else {
           break;
@@ -122,8 +128,8 @@ abstract class ControllerBase with Store {
       }
     } else if (fallingRowIndex < gridSize - 1 &&
         fallingColIndex > 0 &&
-        blockColors[fallingRowIndex][fallingColIndex - 1] != Colors.white &&
-        blockColors[fallingRowIndex][fallingColIndex + 1] != Colors.white) {
+        blockColors[fallingRowIndex * gridSize + fallingColIndex - 1] != Colors.white &&
+        blockColors[fallingRowIndex * gridSize + fallingColIndex + 1] != Colors.white) {
       score += 5;
     }
   }
@@ -132,10 +138,10 @@ abstract class ControllerBase with Store {
   void _calculateWhiteBlocksScore() {
     for (int colIndex = 0; colIndex < gridSize; colIndex++) {
       for (int rowIndex = 1; rowIndex < gridSize; rowIndex++) {
-        if (blockColors[rowIndex][colIndex] == Colors.white) {
+        if (blockColors[rowIndex * gridSize + colIndex] == Colors.white) {
           // Check if there's a colored block above the white block
           for (int i = rowIndex - 1; i >= 0; i--) {
-            if (blockColors[i][colIndex] != Colors.white) {
+            if (blockColors[i * gridSize + colIndex] != Colors.white) {
               // Found a colored block above the white block
               score += 10;
               break;
@@ -164,7 +170,8 @@ abstract class ControllerBase with Store {
               onPressed: () {
                 Navigator.of(context).pop();
                 _calculateWhiteBlocksScore();
-                _clearBoard();
+                gameState = GameState.finished;
+                _showFinalScoreDialog(context);
               },
               child: const Text('Yes'),
             ),
@@ -189,20 +196,15 @@ abstract class ControllerBase with Store {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
+                _clearBoard();
                 startGame();
               },
-              child: const Text('Play Again?'),
+              child: const Text('Play Again'),
             ),
           ],
         );
       },
     );
-  }
-
-  @action
-  void startGame() {
-    gameState = GameState.playing;
-    score = 0;
   }
 
   // If there are 10 blocks with "fallingColor", the game ends
@@ -211,7 +213,7 @@ abstract class ControllerBase with Store {
 
     for (int i = 0; i < gridSize; i++) {
       for (int j = 0; j < gridSize; j++) {
-        if (blockColors[i][j] == fallingColor) {
+        if (blockColors[i * gridSize + j] == fallingColor) {
           count++;
         }
       }
@@ -219,15 +221,13 @@ abstract class ControllerBase with Store {
 
     if (count >= 10) {
       _calculateWhiteBlocksScore();
-      _clearBoard();
+      gameState = GameState.finished;
       _showFinalScoreDialog(context);
     }
   }
 
   @action
   void _clearBoard() {
-    gameState = GameState.finished;
-    blockColors.clear();
-    blockColors.addAll(List.generate(gridSize, (index) => List.filled(gridSize, Colors.white)));
+    blockColors = ObservableList<Color>.of(List.filled(gridSize * gridSize, Colors.white));
   }
 }

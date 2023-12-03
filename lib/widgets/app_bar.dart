@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sisterly_game_challenge/controller.dart';
-import 'package:sisterly_game_challenge/utilities.dart';
+import 'package:sisterly_game_challenge/controllers/controller.dart';
+import 'package:sisterly_game_challenge/enums.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 class GameAppBar extends StatelessWidget {
