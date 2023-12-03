@@ -26,11 +26,16 @@ void main() {
 
   test('When the resetPreviousBlock action is called, the block above the current block has its color changed back to white ', () {
     controller.blockColors = ObservableList<Color>.of([Colors.white, Colors.pink, Colors.white]);
+    controller.fallingRowIndex = 1; 
+    controller.fallingColIndex = 1; 
+
     controller.resetPreviousBlock();
+
     expect(controller.blockColors, [Colors.white, Colors.white, Colors.white]);
   });
 
   test('When the handleNoCollision, the value of fallingRowIndex increases by one', () {
+    controller.initializeBlockColors();
     controller.fallingRowIndex = 2;
     controller.fallingColIndex = 1;
     controller.handleNoCollision();
