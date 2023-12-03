@@ -18,7 +18,7 @@ abstract class ControllerBase with Store {
   GameState gameState = GameState.notStarted;
 
   @observable
-  ObservableList<Color> blockColors = ObservableList<Color>(); 
+  ObservableList<Color> blockColors = ObservableList<Color>();
 
   @observable
   bool isFalling = false;
@@ -41,6 +41,7 @@ abstract class ControllerBase with Store {
 
   @action
   void startGame() {
+    _clearBoard();
     gameState = GameState.playing;
     score = 0;
   }
@@ -51,7 +52,7 @@ abstract class ControllerBase with Store {
     fallingColIndex = colIndex;
     blockColors[rowIndex * gridSize + colIndex] = fallingColor;
     isFalling = true;
-    const duration = Duration(milliseconds: 500);
+    const duration = Duration(milliseconds: 250);
 
     Timer.periodic(duration, (timer) {
       if (isFalling) {
