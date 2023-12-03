@@ -29,13 +29,13 @@ mixin _$Controller on ControllerBase, Store {
       Atom(name: 'ControllerBase.blockColors', context: context);
 
   @override
-  List<List<Color>> get blockColors {
+  ObservableList<List<Color>> get blockColors {
     _$blockColorsAtom.reportRead();
     return super.blockColors;
   }
 
   @override
-  set blockColors(List<List<Color>> value) {
+  set blockColors(ObservableList<List<Color>> value) {
     _$blockColorsAtom.reportWrite(value, super.blockColors, () {
       super.blockColors = value;
     });
@@ -118,6 +118,28 @@ mixin _$Controller on ControllerBase, Store {
       ActionController(name: 'ControllerBase', context: context);
 
   @override
+  void initializeBlockColors() {
+    final _$actionInfo = _$ControllerBaseActionController.startAction(
+        name: 'ControllerBase.initializeBlockColors');
+    try {
+      return super.initializeBlockColors();
+    } finally {
+      _$ControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void fallingAnimation(int rowIndex, int colIndex, BuildContext context) {
+    final _$actionInfo = _$ControllerBaseActionController.startAction(
+        name: 'ControllerBase.fallingAnimation');
+    try {
+      return super.fallingAnimation(rowIndex, colIndex, context);
+    } finally {
+      _$ControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void _resetPreviousBlock() {
     final _$actionInfo = _$ControllerBaseActionController.startAction(
         name: 'ControllerBase._resetPreviousBlock');
@@ -156,17 +178,6 @@ mixin _$Controller on ControllerBase, Store {
         name: 'ControllerBase._handleCollisionCases');
     try {
       return super._handleCollisionCases(context);
-    } finally {
-      _$ControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void fallingAnimation(int rowIndex, int colIndex, BuildContext context) {
-    final _$actionInfo = _$ControllerBaseActionController.startAction(
-        name: 'ControllerBase.fallingAnimation');
-    try {
-      return super.fallingAnimation(rowIndex, colIndex, context);
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }

@@ -15,49 +15,54 @@ class _GameBoardState extends State<GameBoard> {
   final Controller _controller = Controller();
 
   @override
+  void initState() {
+    super.initState();
+    _controller.initializeBlockColors();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Observer(
-      builder: (context) {
-        return Column(
-          children: [
-            GameAppBar(controller: _controller),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: _controller.gridSize,
-                    mainAxisSpacing: 4.0,
-                    crossAxisSpacing: 4.0,
-                  ),
-                  itemBuilder: (BuildContext context, int index) {
-                    int rowIndex = index ~/ _controller.gridSize;
-                    int colIndex = index % _controller.gridSize;
-                    return GestureDetector(
-                      onTap: () {
-                        if (_controller.gameState == GameState.playing && !_controller.isFalling) {
+    return Column(
+      children: [
+        GameAppBar(controller: _controller),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: _controller.gridSize,
+                mainAxisSpacing: 4.0,
+                crossAxisSpacing: 4.0,
+              ),
+              itemBuilder: (BuildContext context, int index) {
+                int rowIndex = index ~/ _controller.gridSize;
+                int colIndex = index % _controller.gridSize;
+                return Observer(builder: (context) {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (_controller.gameState == GameState.playing && _controller.isFalling == false) {
                           _controller.fallingAnimation(rowIndex, colIndex, context);
                         }
-                      },
-                      child: AnimatedContainer(
-                        duration: const Duration(seconds: 1),
-                        width: 50.0,
-                        height: 50.0,
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.all(Radius.circular(8)),
-                          border: Border.all(color: Colors.black),
-                          color: _controller.blockColors[rowIndex][colIndex],
-                        ),
+                      });
+                    },
+                    child: Container(
+                      width: 50.0,
+                      height: 50.0,
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(Radius.circular(8)),
+                        border: Border.all(color: Colors.black),
+                        color: _controller.blockColors[rowIndex][colIndex],
                       ),
-                    );
-                  },
-                  itemCount: _controller.gridSize * _controller.gridSize,
-                ),
-              ),
+                    ),
+                  );
+                });
+              },
+              itemCount: _controller.gridSize * _controller.gridSize,
             ),
-          ],
-        );
-      },
+          ),
+        ),
+      ],
     );
   }
 }

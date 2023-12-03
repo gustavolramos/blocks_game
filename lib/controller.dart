@@ -18,7 +18,7 @@ abstract class ControllerBase with Store {
   GameState gameState = GameState.notStarted;
 
   @observable
-  late List<List<Color>> blockColors = List.generate(gridSize, (index) => List.filled(gridSize, Colors.white));
+  ObservableList<List<Color>> blockColors = ObservableList<List<Color>>();
 
   @observable
   bool isFalling = false;
@@ -33,6 +33,29 @@ abstract class ControllerBase with Store {
   int score = 0;
 
   // An @action is simply a method that modifies @observables
+
+  @action
+  void initializeBlockColors() {
+    blockColors.addAll(List.generate(gridSize, (index) => List.filled(gridSize, Colors.white)));
+  }
+
+  @action
+  void fallingAnimation(int rowIndex, int colIndex, BuildContext context) {
+    fallingRowIndex = rowIndex;
+    fallingColIndex = colIndex;
+    blockColors[fallingRowIndex][fallingColIndex] = fallingColor;
+    isFalling = true;
+    const duration = Duration(seconds: 1);
+
+    Timer.periodic(duration, (timer) {
+      if (isFalling) {
+        _handleCollisionCases(context);
+      } else {
+        _resetPreviousBlock();
+        timer.cancel();
+      }
+    });
+  }
 
   @action
   void _resetPreviousBlock() {
@@ -78,24 +101,6 @@ abstract class ControllerBase with Store {
   }
 
   @action
-  void fallingAnimation(int rowIndex, int colIndex, BuildContext context) {
-    blockColors[rowIndex][colIndex] = fallingColor;
-    fallingRowIndex = rowIndex;
-    fallingColIndex = colIndex;
-    isFalling = true;
-    const duration = Duration(seconds: 1);
-
-    Timer.periodic(duration, (timer) {
-      if (isFalling) {
-        _handleCollisionCases(context);
-      } else {
-        _resetPreviousBlock();
-        timer.cancel();
-      }
-    });
-  }
-
-  @action
   void _calculateColoredBlocksScore() {
     Color currentColor = blockColors[fallingRowIndex][fallingColIndex];
 
@@ -125,13 +130,16 @@ abstract class ControllerBase with Store {
 
   @action
   void _calculateWhiteBlocksScore() {
-    for (int i = 0; i < gridSize; i++) {
-      if (blockColors[i][fallingColIndex] != Colors.white) {
-        for (int j = i - 1; j >= 0; j--) {
-          if (blockColors[j][fallingColIndex] == Colors.white) {
-            score += 10;
-          } else {
-            break;
+    for (int colIndex = 0; colIndex < gridSize; colIndex++) {
+      for (int rowIndex = 1; rowIndex < gridSize; rowIndex++) {
+        if (blockColors[rowIndex][colIndex] == Colors.white) {
+          // Check if there's a colored block above the white block
+          for (int i = rowIndex - 1; i >= 0; i--) {
+            if (blockColors[i][colIndex] != Colors.white) {
+              // Found a colored block above the white block
+              score += 10;
+              break;
+            }
           }
         }
       }
@@ -156,7 +164,7 @@ abstract class ControllerBase with Store {
               onPressed: () {
                 Navigator.of(context).pop();
                 _calculateWhiteBlocksScore();
-                _endGame();
+                _clearBoard();
               },
               child: const Text('Yes'),
             ),
@@ -167,13 +175,16 @@ abstract class ControllerBase with Store {
   }
 
   @action
-  void _showEndGameDialog(BuildContext context) {
+  void _showFinalScoreDialog(BuildContext context) {
     showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Thanks for playing!'),
-          content: Text('Your Score: $score'),
+          content: Text(
+            'Your Score: $score',
+            style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Colors.pink.shade300),
+          ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -194,12 +205,6 @@ abstract class ControllerBase with Store {
     score = 0;
   }
 
-  @action
-  void _endGame() {
-    gameState = GameState.finished;
-    blockColors = List.generate(gridSize, (index) => List.filled(gridSize, Colors.white));
-  }
-
   // If there are 10 blocks with "fallingColor", the game ends
   void _autoEndGame(BuildContext context) {
     int count = 0;
@@ -213,8 +218,16 @@ abstract class ControllerBase with Store {
     }
 
     if (count >= 10) {
-      _endGame();
-      _showEndGameDialog(context);
+      _calculateWhiteBlocksScore();
+      _clearBoard();
+      _showFinalScoreDialog(context);
     }
+  }
+
+  @action
+  void _clearBoard() {
+    gameState = GameState.finished;
+    blockColors.clear();
+    blockColors.addAll(List.generate(gridSize, (index) => List.filled(gridSize, Colors.white)));
   }
 }
