@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:sisterly_game_challenge/controllers/controller.dart';
-import 'package:sisterly_game_challenge/enums.dart';
+import 'package:blocks_game/controllers/controller.dart';
+import 'package:blocks_game/enums.dart';
 
 class GameStatus extends StatefulWidget {
   const GameStatus({super.key, required this.controller});
@@ -39,7 +39,7 @@ class _GameStatusState extends State<GameStatus> {
             children: [
               Icon(icon),
               const SizedBox(width: 8.0),
-              Text(text, style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Colors.pink.shade300)),
+              Text(text, style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Colors.grey.shade700)),
             ],
           ),
         );

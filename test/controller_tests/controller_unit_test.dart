@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobx/mobx.dart';
-import 'package:sisterly_game_challenge/controllers/controller.dart';
-import 'package:sisterly_game_challenge/enums.dart';
+import 'package:blocks_game/controllers/controller.dart';
+import 'package:blocks_game/enums.dart';
 
 void main() {
   late Controller controller;

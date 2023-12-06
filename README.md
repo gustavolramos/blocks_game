@@ -1,4 +1,4 @@
-# sisterly_game_challenge
+# blocks_game
 
 This project is Gustavo Ramos' submission for Sisterly's Flutter Developer role. 
 

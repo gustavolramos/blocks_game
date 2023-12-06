@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sisterly_game_challenge/controllers/controller.dart';
-import 'package:sisterly_game_challenge/enums.dart';
+import 'package:blocks_game/controllers/controller.dart';
+import 'package:blocks_game/enums.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 class GameAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -19,7 +19,7 @@ class GameAppBar extends StatelessWidget implements PreferredSizeWidget {
         return AppBar(
           leading: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Image.asset('assets/sisterly_games_logo.png'),
+            child: Image.asset('assets/flutter_logo.png'),
           ),
           title: Text('Blocks - Score: ${controller.score}'),
           actions: [

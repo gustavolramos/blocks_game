@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
-import 'package:sisterly_game_challenge/enums.dart';
+import 'package:blocks_game/enums.dart';
 
 part 'controller.g.dart';
 
 class Controller = ControllerBase with _$Controller;
 
 abstract class ControllerBase with Store {
-  Color fallingColor = Colors.pink.shade200;
+  Color fallingColor = Colors.grey.shade400;
   int gridSize = 5;
 
   // @observables are state variables that should only be modified by @actions

@@ -1,6 +1,6 @@
 {
-    "name": "sisterly_game_challenge",
-    "short_name": "sisterly_game_challenge",
+    "name": "blocks_game",
+    "short_name": "blocks_game",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#hexcode",

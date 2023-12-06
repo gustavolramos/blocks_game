@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:sisterly_game_challenge/controllers/controller.dart';
-import 'package:sisterly_game_challenge/widgets/app_bar.dart';
-import 'package:sisterly_game_challenge/widgets/game_status.dart';
-import 'package:sisterly_game_challenge/enums.dart';
+import 'package:blocks_game/controllers/controller.dart';
+import 'package:blocks_game/widgets/app_bar.dart';
+import 'package:blocks_game/widgets/game_status.dart';
+import 'package:blocks_game/enums.dart';
 
 class GameBoard extends StatefulWidget {
   const GameBoard({Key? key}) : super(key: key);

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 ThemeData standardTheme = ThemeData(
   brightness: Brightness.light,
-  colorSchemeSeed: Colors.pink,
+  colorSchemeSeed: Colors.grey.shade200,
   appBarTheme: AppBarTheme(
-    color: Colors.pink.shade200
+    color: Colors.grey.shade300
   ),
   scaffoldBackgroundColor: Colors.white, 
   );

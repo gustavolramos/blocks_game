@@ -1,10 +1,10 @@
 // This file will contain widget tests for the controller
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sisterly_game_challenge/controllers/controller.dart';
-import 'package:sisterly_game_challenge/enums.dart';
-import 'package:sisterly_game_challenge/widgets/app_bar.dart';
-import 'package:sisterly_game_challenge/widgets/game_status.dart';
+import 'package:blocks_game/controllers/controller.dart';
+import 'package:blocks_game/enums.dart';
+import 'package:blocks_game/widgets/app_bar.dart';
+import 'package:blocks_game/widgets/game_status.dart';
 
 void main() {
   late Controller controller;

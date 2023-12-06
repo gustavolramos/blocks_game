@@ -1,5 +1,5 @@
-name: sisterly_game_challenge
-description: "Flutter Developer position challenge"
+name: blocks_game
+description: "Flutter game of falling blocks"
 publish_to: 'none'
 version: 0.1.0
 

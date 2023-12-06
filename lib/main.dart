@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sisterly_game_challenge/game_board.dart';
-import 'package:sisterly_game_challenge/theme.dart';
+import 'package:blocks_game/game_board.dart';
+import 'package:blocks_game/theme.dart';
 
 void main() {
   runApp(const MainApp());

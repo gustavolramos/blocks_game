@@ -1,4 +1,4 @@
-package com.example.sisterly_game_challenge
+package com.example.blocks_game
 
 import io.flutter.embedding.android.FlutterActivity
 
